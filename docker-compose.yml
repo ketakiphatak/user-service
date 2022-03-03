@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    restart: always
+    networks:
+      - user-service-network
+    ports:
+      - 7000:7000
+      - 9042:9042
+    environment:
+      - CASSANDRA_DC=dc1
+  cassandra-load-keyspace:
+    container_name: cassandra-load-keyspace
+    image: cassandra:latest
+    depends_on:
+      - cassandra
+    networks:
+      - user-service-network
+    volumes:
+      - ./src/main/resources/cassandra_schema.cql:/schema.cql
+    command: /bin/bash -c "sleep 60 && echo loading cassandra keyspace && cqlsh cassandra -f /schema.cql && echo done"
+networks:
+  user-service-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1

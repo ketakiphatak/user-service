@@ -1,0 +1,310 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: InstaPic - OpenAPI 3.0
+servers:
+  - url: http://api.instapic.com/v1
+paths:
+  /users/{userId}:
+    get:
+      tags:
+        - User Service
+      summary: 'Get user'
+      description: To retrieve user details.
+      operationId: 'findUserbyId'
+      parameters:
+        - name: X-Request-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+             type: integer
+      responses:
+        '200':
+          description: User details were found with the given userId. Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400': 
+           description: The server could not understand the request due to invalid syntax.
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '500':
+            description: The server failed to process the request. Response body will contain error details.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Errors'
+    post:
+      tags:
+        - User Service
+      summary: 'Update user'
+      description: This method is used to update user details.
+      operationId: 'updateUser'
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+             type: integer
+      responses:
+        '200':
+          description: The given details were successfully updated.
+          content:
+            applicaton/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '405':
+            description: The request method is known by the server but is not supported by the target resource. Invalid input.
+    delete:
+      tags:
+        - User Service
+      summary: 'Delete user'
+      description: This method is used to delete a given user.
+      operationId: 'deleteUser'
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+             type: integer
+      responses:
+        '200':
+            description: The given user was deleted successfully.
+        '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                  
+        default: 
+            description: unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+  /users:
+    put:
+      tags:
+        - User Service
+      summary: 'Create user'
+      description: This method is used to create a new user.
+      operationId: 'createUser'
+      responses:
+          '201':
+            description: Request successful.A new user is created.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+          '400':
+            description: The server could not understand the request due to invalid syntax.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                  
+          default: 
+            description: unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserRequest" 
+  /photos/{photoId}:
+    get:
+      tags:
+        - Photo Service
+      summary: 'Get Photo'
+      description: Retrieve photo details with photoId.
+      operationId: 'findphotoById'
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+             type: string
+             format: uuid
+      responses:
+        '200':
+          description: Photo details were found with the given photoId. Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400': 
+           description: The server could not understand the request due to invalid syntax.Invalid photoId
+    post:
+      tags:
+        - Photo Service
+      summary: 'Add Photo'
+      description: This method is used to upload/add the photos.
+      operationId: 'addPhoto'
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+             type: string
+             format: uuid
+      responses:
+        '200':
+          description: The photo was successfully uploaded.
+          content:
+            applicaton/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '405':
+            description: The request method is known by the server but is not supported by the target resource. Invalid input.
+    delete:
+      tags:
+        - Photo Service
+      summary: 'Delete Photo'
+      description: Used to delete a photo.
+      operationId: 'deletePhoto'
+      parameters:
+        - name: photoId
+          in: path
+          description: Photo Id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+            description: The requested photo was deleted.
+        '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                  
+        default: 
+            description: unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+  /photos:
+    put:
+      tags:
+        - Photo Service
+      summary: 'Update Photo'
+      description: Used to Update a Photo.
+      operationId: 'updatePhoto'
+      responses:
+          '201':
+            description: The Photo was successfully updated.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AddPhotoRequest'
+          '400':
+            description: The server could not understand the request due to invalid syntax.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+                  
+          default: 
+            description: unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                 $ref: "#/components/schemas/AddPhotoRequest" 
+components:
+  schemas:
+    AddPhotoRequest:
+      type: "object"
+      properties:
+        userId:
+          type: "integer"
+        caption:
+          type: "string"
+        photo:
+          description: Base 64 encoded PNG image. Photo size should be 750px X 750px
+          type: "string"
+    Photo:
+      properties:
+        timestamp:
+          description: Time stamp date-time as defined by RFC 3339 eg. 2017-07-21T17:32:28Z
+          type: "string"
+          format: date-time
+        photoId:
+          type: "string"
+          format: uuid
+        photoUrl:
+          type: "string"
+    Errors:
+      type: "object"
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Error"
+    Error:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int64"
+        description:
+          type: "string"
+    CreateUserRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        email:
+          type: "string"
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        username:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        email:
+          type: "string"

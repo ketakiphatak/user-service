@@ -9,8 +9,6 @@ services:
     ports:
       - 7000:7000
       - 9042:9042
-    environment:
-      - CASSANDRA_DC=dc1
   cassandra-load-keyspace:
     container_name: cassandra-load-keyspace
     image: cassandra:latest
